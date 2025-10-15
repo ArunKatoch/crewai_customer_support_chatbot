@@ -6,6 +6,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 from crewai.flow import Flow, listen, start
 from crewai import LLM,Agent,Task,Crew
+from crewai_tools import SerperDevTool
 import os
 from dotenv import load_dotenv
 
@@ -118,6 +119,8 @@ class CustomerSupportFlow(Flow[CustomerSupportState]):
                 agent=ticket_classifier_agent,
                 output_pydantic=TicketType
             )
+            return task
+
         classification_task = create_classification_task(self.state.issue_description)
         # Create crew
         crew = Crew(
@@ -133,10 +136,23 @@ class CustomerSupportFlow(Flow[CustomerSupportState]):
         self.state.ticket_type = response.ticket_type
         self.state.ticket_subject = response.ticket_subject
         self.state.reasoning = response.reasoning
+        print(f'I have classified the ticket as {self.state.ticket_type} and {self.state.ticket_subject}')
         return self.state
 
     @listen(generate_type_and_subject)
     def generate_resolution(self):
+        """Generate the resolution for the ticket"""
+        serper_tool = SerperDevTool()
+        cs_searchers = Agent(
+            role='Customer Support Ticket Resolver',
+            goal=f'Resolve the customer support ticket,Search for official troubleshooting steps, FAQs, and support documentation for [Product Name] regarding [specific issue]. Include results from the manufacturers official website, reputable tech support forums, and recent articles (within the last 12 months). Prioritize solutions that are verified and safe to implement.',
+            backstory="""You are an expert customer support analyst with years of experience 
+            in resolving customer support tickets.you will use the serper_tool to search the internet for the best solution to the ticket.""",
+            tools=[serper_tool]
+        )
+        results =cs_searchers.kickoff(f'User is facing issue with {self.state.product_name} and issue is {self.state.issue_description}')
+        self.state.final_resolution = results
+        print(self.state.final_resolution)
         return self.state
 
 
