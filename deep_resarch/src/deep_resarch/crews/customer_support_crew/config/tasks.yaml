@@ -1,12 +1,31 @@
 validate_ticket:
   description: >
     Validate the customer support ticket to ensure it contains a legitimate
-    product name: {product_name} and issue description: {issue_description}.
-    Check if both fields are properly filled out and make sense in the context
-    of a customer support request.
+    product name and clear issue description.
+
+    Product Name: {product_name}
+    Issue Description: {issue_description}
+
+    Validation Criteria:
+    1. Product name must be specific (e.g., "Dell XPS 15" not just "laptop")
+    2. Product name should include brand and model if possible
+    3. Issue description must be detailed and specific (not just "broken" or "not working")
+    4. Issue description should describe actual symptoms or error messages
+    5. Both fields must be properly filled out and make sense
+
+    Mark as INVALID if:
+    - Product name is too generic (e.g., "laptop", "phone", "computer")
+    - Issue description is vague (e.g., "broken", "not working", "problem")
+    - Missing critical information
+    - Appears to be spam or nonsensical
+
+    Mark as VALID if:
+    - Product name is specific with brand/model
+    - Issue description clearly explains the problem
+    - Ticket can be reasonably processed by support team
   expected_output: >
     A JSON object with a boolean field 'valid_ticket' indicating whether
-    the ticket is valid or not.
+    the ticket is valid (true) or invalid (false).
   agent: ticket_validator
 
 classify_ticket:

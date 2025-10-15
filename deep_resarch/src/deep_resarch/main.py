@@ -2,7 +2,7 @@
 
 import json
 from pydantic import BaseModel
-from crewai.flow import Flow, listen, start
+from crewai.flow import Flow, listen, start, router
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,6 +18,7 @@ class CustomerSupportState(BaseModel):
     reasoning: str = ""
     final_resolution: str = ""
     ticket_validated: bool = False
+    validation_message: str = ""
     
 class CustomerSupportFlow(Flow[CustomerSupportState]):
 
@@ -41,7 +42,7 @@ class CustomerSupportFlow(Flow[CustomerSupportState]):
         print(f"\nProcessing ticket for {self.state.product_name}...")
         return self.state
 
-    @listen(get_input)
+    @router(get_input)
     def validate_ticket(self):
         """Step 1: Validate the customer support ticket"""
         print("\n--- Step 1: Validating Ticket ---\n")
@@ -77,9 +78,59 @@ class CustomerSupportFlow(Flow[CustomerSupportState]):
             self.state.ticket_validated = result.pydantic.valid_ticket
             print(f"\nTicket Valid: {self.state.ticket_validated}\n")
 
+        # Route based on validation
+        if self.state.ticket_validated:
+            return "classify_ticket_now"
+        else:
+            return "handle_invalid_ticket_now"
+
+    @listen("handle_invalid_ticket_now")
+    def handle_invalid_ticket(self):
+        """Handle invalid ticket - provide feedback to user"""
+        print("\n--- Ticket Validation Failed ---\n")
+
+        self.state.validation_message = f"""
+        ╔══════════════════════════════════════════════════════════════════╗
+        ║                    INVALID TICKET DETECTED                       ║
+        ╚══════════════════════════════════════════════════════════════════╝
+
+        Unfortunately, we could not validate your ticket. This could be due to:
+
+        1. Product Name Issue:
+        - The product name "{self.state.product_name}" may not be recognizable
+        - It might be misspelled or not in our system
+        - Please provide the full, correct product name
+
+        2. Issue Description Issue:
+        - The issue description "{self.state.issue_description}" may be too vague
+        - It might not contain enough information
+        - Please provide a clear, detailed description of the problem
+
+        Suggestions for resubmitting:
+        ✓ Use the official product name (e.g., "iPhone 15 Pro" not "my phone")
+        ✓ Describe the specific problem (e.g., "screen not turning on" not "broken")
+        ✓ Include any error messages or symptoms
+        ✓ Mention when the issue started
+
+        Examples of valid tickets:
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        Product: Dell XPS 15 Laptop
+        Issue: Laptop battery drains within 1 hour even when fully charged
+
+        Product: Samsung Galaxy S24
+        Issue: Camera app crashes immediately when opened after latest update
+
+        Product: Sony WH-1000XM5 Headphones
+        Issue: Bluetooth connection drops every 5 minutes on Windows 11
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        Please restart the flow and provide valid ticket information.
+        """
+
+        print(self.state.validation_message)
         return self.state
 
-    @listen(validate_ticket)
+    @listen("classify_ticket_now")
     def classify_ticket(self):
         """Step 2: Classify the ticket type and subject"""
         print("\n--- Step 2: Classifying Ticket ---\n")
