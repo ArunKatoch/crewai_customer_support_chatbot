@@ -1,0 +1,80 @@
+validate_ticket:
+  description: >
+    Validate the customer support ticket to ensure it contains a legitimate
+    product name: {product_name} and issue description: {issue_description}.
+    Check if both fields are properly filled out and make sense in the context
+    of a customer support request.
+  expected_output: >
+    A JSON object with a boolean field 'valid_ticket' indicating whether
+    the ticket is valid or not.
+  agent: ticket_validator
+
+classify_ticket:
+  description: >
+    Analyze the following customer support ticket description and classify it
+    into one of the available ticket types and subjects.
+
+    Ticket Description: {issue_description}
+    Product Name: {product_name}
+
+    Available Ticket Types:
+    - technical_issue
+    - billing_inquiry
+    - cancellation_request
+    - product_inquiry
+    - refund_request
+
+    Available Ticket Subjects:
+    - network_problem
+    - account_access
+    - data_loss
+    - software_bug
+    - product_setup
+    - product_recommendation
+    - cancellation_request
+    - product_compatibility
+    - hardware_issue
+    - delivery_problem
+    - payment_issue
+    - refund_request
+    - display_issue
+    - battery_life
+    - installation_support
+    - peripheral_compatibility
+
+    Carefully read the ticket description and determine which ticket type and
+    subject best match the customer's issue or request. Consider the main intent
+    and primary concern of the customer.
+  expected_output: >
+    A JSON object with the following structure:
+    {{
+      "ticket_type": "the classified ticket type (must be one from the available types)",
+      "ticket_subject": "the classified ticket subject (must be one from the available subjects)",
+      "reasoning": "brief explanation of why you chose this classification"
+    }}
+  agent: ticket_classifier
+
+resolve_ticket:
+  description: >
+    Research and provide a comprehensive resolution for the customer support ticket.
+
+    Product: {product_name}
+    Issue: {issue_description}
+    Ticket Type: {ticket_type}
+    Ticket Subject: {ticket_subject}
+
+    Search for official troubleshooting steps, FAQs, and support documentation
+    for the product regarding the specific issue. Include results from the
+    manufacturer's official website, reputable tech support forums, and recent
+    articles (within the last 12 months). Prioritize solutions that are verified
+    and safe to implement.
+
+    Provide step-by-step instructions that are clear and actionable for the customer.
+  expected_output: >
+    A detailed resolution guide with:
+    1. Summary of the issue
+    2. Step-by-step troubleshooting instructions
+    3. Alternative solutions if applicable
+    4. Links to relevant documentation or resources
+    5. Contact information for escalation if needed
+  agent: ticket_resolver
