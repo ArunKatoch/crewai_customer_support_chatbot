@@ -23,10 +23,10 @@ crewai install
 
 **Add your `OPENAI_API_KEY` into the `.env` file**
 
-- Modify `src/deep_research/config/agents.yaml` to define your agents
-- Modify `src/deep_research/config/tasks.yaml` to define your tasks
-- Modify `src/deep_research/crew.py` to add your own logic, tools and specific args
-- Modify `src/deep_research/main.py` to add custom inputs for your agents and tasks
+- Modify `src/deep_resarch/config/agents.yaml` to define your agents
+- Modify `src/deep_resarch/config/tasks.yaml` to define your tasks
+- Modify `src/deep_resarch/crew.py` to add your own logic, tools and specific args
+- Modify `src/deep_resarch/main.py` to add custom inputs for your agents and tasks
 
 ## Running the Project
 
@@ -36,13 +36,13 @@ To kickstart your flow and begin execution, run this from the root folder of you
 crewai run
 ```
 
-This command initializes the deep_research Flow as defined in your configuration.
+This command initializes the deep_resarch Flow as defined in your configuration.
 
 This example, unmodified, will run the create a `report.md` file with the output of a research on LLMs in the root folder.
 
 ## Understanding Your Crew
 
-The deep_research Crew is composed of multiple AI agents, each with unique roles, goals, and tools. These agents collaborate on a series of tasks, defined in `config/tasks.yaml`, leveraging their collective skills to achieve complex objectives. The `config/agents.yaml` file outlines the capabilities and configurations of each agent in your crew.
+The deep_resarch Crew is composed of multiple AI agents, each with unique roles, goals, and tools. These agents collaborate on a series of tasks, defined in `config/tasks.yaml`, leveraging their collective skills to achieve complex objectives. The `config/agents.yaml` file outlines the capabilities and configurations of each agent in your crew.
 
 ## Support
 

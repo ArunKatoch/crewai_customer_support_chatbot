@@ -1,17 +1,20 @@
 [project]
-name = "customer"
+name = "deep_resarch"
 version = "0.1.0"
-description = "deep_research using crewAI"
+description = "deep_resarch using crewAI"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.10,<3.14"
 dependencies = [
     "crewai[tools]>=0.203.0,<1.0.0",
+    "ipykernel>=7.0.1",
+    "jupyter>=1.1.1",
+    "pandas>=2.3.3",
 ]
 
 [project.scripts]
-kickoff = "deep_research.main:kickoff"
-run_crew = "deep_research.main:kickoff"
-plot = "deep_research.main:plot"
+kickoff = "deep_resarch.main:kickoff"
+run_crew = "deep_resarch.main:kickoff"
+plot = "deep_resarch.main:plot"
 
 [build-system]
 requires = ["hatchling"]
